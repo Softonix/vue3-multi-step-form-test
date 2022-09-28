@@ -1,0 +1,18 @@
+@use "element-plus/theme-chalk/src/var";
+@use "element-plus/theme-chalk/src/base";
+@use "element-plus/theme-chalk/src/card";
+@use "element-plus/theme-chalk/src/button";
+@use "element-plus/theme-chalk/src/form";
+@use "element-plus/theme-chalk/src/form-item";
+@use "element-plus/theme-chalk/src/tabs";
+@use "element-plus/theme-chalk/src/input";
+@use "element-plus/theme-chalk/src/date-picker";
+@use "element-plus/theme-chalk/src/message";
+@use "element-plus/theme-chalk/src/loading";
+@use "element-plus/theme-chalk/src/descriptions";
+@use "element-plus/theme-chalk/src/descriptions-item";
+
+.el-date-editor,
+.el-date-editor .el-input__wrapper {
+  @apply w-full #{!important};
+}
