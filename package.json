@@ -5,8 +5,12 @@
     "dev": "vite",
     "build": "run-p type-check build-only",
     "preview": "vite preview --port 4173",
+    "test:e2e": "start-server-and-test preview http://localhost:4173/ 'cypress open --e2e'",
+    "test:e2e:ci": "start-server-and-test preview http://localhost:4173/ 'cypress run --e2e'",
+    "test:unit": "cypress open --component",
+    "test:unit:ci": "cypress run --component --quiet --reporter spec",
     "build-only": "vite build",
-    "type-check": "vue-tsc --noEmit",
+    "type-check": "vue-tsc --noEmit -p tsconfig.cypress-ct.json --composite false",
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
@@ -14,6 +18,9 @@
     "vue": "^3.2.37"
   },
   "devDependencies": {
+    "cypress": "^10.7.0",
+    "eslint-plugin-cypress": "^2.12.1",
+    "start-server-and-test": "^1.14.0",
     "@rushstack/eslint-patch": "^1.1.4",
     "@types/node": "^16.11.47",
     "@vitejs/plugin-vue": "^3.0.1",

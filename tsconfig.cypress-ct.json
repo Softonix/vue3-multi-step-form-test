@@ -1,0 +1,14 @@
+{
+  "extends": "./tsconfig.app.json",
+  "include": [
+    "dts/*",
+    "src/**/*",
+    "src/**/*.vue",
+    "cypress/support/component.*",
+    "cypress/support/commands.ts"
+  ],
+  "exclude": [],
+  "compilerOptions": {
+    "composite": true
+  }
+}
