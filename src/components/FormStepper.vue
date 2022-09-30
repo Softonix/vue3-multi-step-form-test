@@ -72,13 +72,14 @@
       <div class="mt-2">
         <el-button
           v-if="currentTabIndex < tabs.length - 1"
+          id="prev-btn"
           :disabled="currentTabIndex === 0"
           @click="changeTab(currentTabIndex - 1)"
         >
           Previous
         </el-button>
 
-        <el-button @click="changeTab(currentTabIndex + 1)">
+        <el-button id="next-btn" @click="changeTab(currentTabIndex + 1)">
           {{ currentTab.buttonText }}
         </el-button>
       </div>
@@ -90,9 +91,27 @@
 import { ElMessage } from 'element-plus'
 import type { ITab, TAwaitable } from '@/types'
 
+const props = withDefaults(defineProps<{
+  initialTab?: number
+  initialFormModel?: {
+    firstName: string
+    lastName: string
+    middleName: string
+    dateOfBirth: string
+  }
+}>(), {
+  initialTab: 0,
+  initialFormModel: () => ({
+    firstName: '',
+    lastName: '',
+    middleName: '',
+    dateOfBirth: ''
+  })
+})
+
 const loading = ref(false)
 
-const currentTabIndex = ref(0)
+const currentTabIndex = ref(props.initialTab)
 const currentTab = computed(() => tabs[currentTabIndex.value])
 const tabsDisabled = computed(() => currentTabIndex.value === tabs.length - 1)
 
@@ -103,11 +122,15 @@ const tabs: (ITab & {
   {
     label: 'First Name & Last Name',
     buttonText: 'Next',
-    action: () => {
-      return formConfig.ref.value?.validateField([
+    action: async () => {
+      await formConfig.ref.value?.validateField([
         formConfig.firstName.prop,
         formConfig.lastName.prop
-      ])
+      ]).catch(() => {
+        const message = 'First name or Last name or both are invalid'
+        ElMessage.error(message)
+        return Promise.reject(new Error(message))
+      })
     }
   },
   { label: 'Middle Name', buttonText: 'Next' },
@@ -115,7 +138,11 @@ const tabs: (ITab & {
     label: 'Date Of Birth',
     buttonText: 'Submit',
     action: async () => {
-      await formConfig.ref.value?.validateField(formConfig.dateOfBirth.prop)
+      await formConfig.ref.value?.validateField(formConfig.dateOfBirth.prop).catch(() => {
+        const message = 'Date of birth is required'
+        ElMessage.error(message)
+        return Promise.reject(new Error(message))
+      })
       await submit()
     }
   },
@@ -133,21 +160,20 @@ const tabs: (ITab & {
 
 async function changeTab (newIndex: number | string) {
   if (newIndex > currentTabIndex.value) {
-    await currentTab.value.action?.()
-    currentTabIndex.value = Math.min(+newIndex, tabs.length - 1)
+    try {
+      await currentTab.value.action?.()
+      currentTabIndex.value = Math.min(+newIndex, tabs.length - 1)
+    } catch {
+      return false
+    }
   } else {
     currentTabIndex.value = +newIndex
   }
 }
 
-const formModel = reactive({
-  firstName: '',
-  lastName: '',
-  middleName: '',
-  dateOfBirth: ''
-})
+const formModel = reactive(props.initialFormModel)
 
-const formConfig = useElForm<keyof typeof formModel>({
+const formConfig = useElForm<keyof typeof props.initialFormModel>({
   firstName: { label: 'First Name', rules: useRequiredRule() },
   lastName: { label: 'Last Name', rules: useRequiredRule() },
   middleName: { label: 'Middle Name' },
@@ -168,4 +194,9 @@ async function submit () {
     loading.value = false
   }
 }
+
+defineExpose({
+  formModel,
+  currentTabIndex
+})
 </script>

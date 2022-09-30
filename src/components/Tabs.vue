@@ -25,7 +25,7 @@ const props = defineProps<{
   modelValue: number
   disabled?: boolean
   data: ITab[]
-  beforeLeave: (newName: string | number, oldName: string | number) => TAwaitable<boolean | void>
+  beforeLeave?: (newName: string | number, oldName: string | number) => TAwaitable<boolean | void>
 }>()
 
 const emit = defineEmits(['update:modelValue', 'tab-change'])
